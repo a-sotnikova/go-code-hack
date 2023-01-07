@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ТОП игроков Музея Транспорта Москвы</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+		<style>
+			body {
+			  background: #F7F7F7;
+			  padding-top: 40px;
+			  height: 100vw;
+			}
+
+
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="progress-bar mt-0"></div>
+			<p class="progress-points">0 / 12</p>
+			<h3 class="text-center mb-5">ТОП игроков Музея Транспорта Москвы за сегодня</h3>
+			<h5 class="text-center mb-5">Начните или продолжайте играть, чтобы стать первым!</h5>
+			<h5 class="text-center mb-5">
+				QR коды со ссылками на мини-игры находятся около экспонатов. Всего 12 игр: викторины, паззлы, Flappy Bird и Запоминание картинок.
+				<br>Наберите 10 очков и получите приз! Удачи!
+			</h5>
+			<h5 class="text-center"><a href="https://nnakleskin.github.io/go-code-hack/quiz.html?vid=1">Переходите к первой мини-игре прямо сейчас!</a></h5>
+			<div class="dashboard-holder"></div>
+		</div>
+	<script src="assets/js/main.js"></script>
+	<script>
+		let idx = 1
+		let dashboardHolder = document.querySelector(".dashboard-holder")
+		let yourScore = getProgressPoints()
+		let nick = localStorage.getItem("nickname")
+		let flag = false
+		let players = {
+			"1" : {
+				"name" : "vika",
+				"score" : "10"
+			},
+			"2" : {
+				"name" : "ruhakachmaz",
+				"score" : "9"
+			},
+			"3" : {
+				"name" : "moscow2020",
+				"score" : "7"
+			},
+			"4" : {
+				"name" : "sergey",
+				"score" : "5"
+			},
+			"5" : {
+				"name" : "nikita",
+				"score" : "4"
+			},
+			"6" : {
+				"name" : "oleg_m",
+				"score" : "3"
+			},
+
+		}
+		for(let i in players){
+			if(yourScore >= players[i].score && !flag && nick !== null){
+				dashboardHolder.insertAdjacentHTML("beforeend", `
+					<div class="dashboard-item w-100 own-score">
+						<div class="row">
+							<div class="item-number col-2 text-left">${idx}.</div>
+							<div class="item-value col-10 text-right">${nick} <span class="item-score">${yourScore} / 12</span></div>
+						</div>
+					</div>
+				`)
+				idx++
+				flag = true
+			}
+			dashboardHolder.insertAdjacentHTML("beforeend", `
+				<div class="dashboard-item w-100">
+					<div class="row">
+						<div class="item-number col-2 text-left">${idx}.</div>
+						<div class="item-value col-10 text-right">${players[i].name} <span class="item-score">${players[i].score} / 12</span></div>
+					</div>
+				</div>
+			`)
+			idx++
+		}
+
+		if(!flag && nick !== null){
+			dashboardHolder.insertAdjacentHTML("beforeend", `
+				<div class="dashboard-item w-100 own-score">
+					<div class="row">
+						<div class="item-number col-2 text-left">${idx}.</div>
+						<div class="item-value col-10 text-right">${nick} <span class="item-score">${yourScore} / 12</span></div>
+					</div>
+				</div>
+			`)
+		}
+	</script>
+	</body>
+
+</html>

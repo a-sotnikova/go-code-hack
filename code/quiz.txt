@@ -1,0 +1,12 @@
+Ссылки на игры:
+1) /quiz.html?vid=1
+2) /quiz.html?vid=2
+3) /quiz.html?vid=3
+4) /quiz.html?vid=4
+5) /flappy/index.html?vid=5
+6) /pazl.html?vid=6
+7) /pazl.html?vid=7
+8) /pazl.html?vid=8
+9) /pazl.html?vid=9
+10) /pazl.html?vid=10
+11) /cards/index.html?vid=11

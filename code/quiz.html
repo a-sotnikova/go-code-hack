@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Викторина</title>
+		<meta charset="utf-8">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="HandheldFriendly" content="true"/>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+		<link rel="stylesheet" href="assets/css/main.css">
+		<link rel="stylesheet" type="text/css" href="assets/css/app.css">
+	</head>
+	<body>
+		<div class="container">
+			<div class="progress-bar"></div>
+			<p class="progress-points">0 / 12</p>
+			<div class="wrapper">
+				<main class="main">
+					<div class="quiz__head">
+						<div class="head__content" id="head"></div>					
+					</div>
+					<div class="quiz__body">
+						<div class="buttons">
+							<div class="buttons__content" id="buttons">
+								<button class="button">Default button</button><br>
+								<button class="button button_wrong">Wrong answer</button><br>
+								<button class="button button_correct">Correct answer</button><br>
+								<button class="button button_passive">Unclicked button</button><br>
+							</div>
+						</div>
+
+						<div class="quiz__footer">
+							<div class="footer__content" id="pages">0 / 0</div>
+						</div>
+					</div>
+					
+				</main>
+			</div>
+		</div>
+
+
+
+		<div class="modal-overlay d-none">
+			<div class="modal-window">
+				<div class="modal-head">
+					<span id="close-modal">&times;</span>
+				</div>
+				<div class="modal-body">
+					<h6 class="modal-title">
+						Поздравляем! Вы справились с заданием!
+					</h6>
+					<h6 class="modal-quiz-score"></h6>
+					<h6 class="modal-quiz-result"></h6>
+					
+					<p class="modal-desc"></p>
+					<button class="mm-btn w-100" id="close-game">Закрыть игру</button>
+				</div>
+			</div>
+		</div>
+
+
+
+		<script type="text/javascript" src="assets/js/main.js"></script>
+		<script>
+			const modal = document.querySelector(".modal-overlay")
+			const closeModal = document.querySelector("#close-modal")
+			const closeGame = document.querySelector("#close-game")
+			const modalQuizScore = document.querySelector(".modal-quiz-score")
+			const modalQuizResult = document.querySelector(".modal-quiz-result")
+
+			closeModal.addEventListener("click", function(){
+				modal.classList.add("d-none")
+			})
+
+			closeGame.addEventListener("click", function(){
+				window.location.href = "https://mtmuseum.com/vdnh"
+			})
+
+		</script>
+		<script>
+			const headElem = document.getElementById("head");
+			const buttonsElem = document.getElementById("buttons");
+			const pagesElem = document.getElementById("pages");
+
+			//Класс, который представляет сам тест
+			class Quiz
+			{
+				constructor(type, questions, results)
+				{
+					//Тип теста: 1 - классический тест с правильными ответами, 2 - тест без правильных ответов
+					this.type = type;
+
+					//Массив с вопросами
+					this.questions = questions;
+
+					//Массив с возможными результатами
+					this.results = results;
+
+					//Количество набранных очков
+					this.score = 0;
+
+					//Номер результата из массива
+					this.result = 0;
+
+					//Номер текущего вопроса
+					this.current = 0;
+				}
+
+				Click(index)
+				{
+					//Добавляем очки
+					let value = this.questions[this.current].Click(index);
+					this.score += value;
+
+					let correct = -1;
+
+					//Если было добавлено хотя одно очко, то считаем, что ответ верный
+					if(value >= 1)
+					{
+						correct = index;
+					}
+					else
+					{
+						//Иначе ищем, какой ответ может быть правильным
+						for(let i = 0; i < this.questions[this.current].answers.length; i++)
+						{
+							if(this.questions[this.current].answers[i].value >= 1)
+							{
+								correct = i;
+								break;
+							}
+						}
+					}
+
+					this.Next();
+
+					return correct;
+				}
+
+				//Переход к следующему вопросу
+				Next()
+				{
+					this.current++;
+					
+					if(this.current >= this.questions.length) 
+					{
+						this.End();
+					}
+				}
+
+				//Если вопросы кончились, этот метод проверит, какой результат получил пользователь
+				End()
+				{
+					for(let i = 0; i < this.results.length; i++)
+					{
+						if(this.results[i].Check(this.score))
+						{
+							this.result = i;
+						}
+					}
+				}
+			} 
+
+			//Класс, представляющий вопрос
+			class Question 
+			{
+				constructor(text, answers)
+				{
+					this.text = text; 
+					this.answers = answers; 
+				}
+
+				Click(index) 
+				{
+					return this.answers[index].value; 
+				}
+			}
+
+			//Класс, представляющий ответ
+			class Answer 
+			{
+				constructor(text, value) 
+				{
+					this.text = text; 
+					this.value = value; 
+				}
+			}
+
+			//Класс, представляющий результат
+			class Result 
+			{
+				constructor(text, value)
+				{
+					this.text = text;
+					this.value = value;
+				}
+
+				//Этот метод проверяет, достаточно ли очков набрал пользователь
+				Check(value)
+				{
+					if(this.value <= value)
+					{
+						return true;
+					}
+					else 
+					{
+						return false;
+					}
+				}
+			}
+
+			//Массив с результатами
+			const results = 
+			[
+				new Result("Вам еще нужно чему-то научиться", 0),
+				new Result("Вы неплохо разбираетесь", 2),
+				new Result("Вы отлично справились!", 4),
+				new Result("Ваш уровень знаний очень высок!", 5)
+			];
+
+			let testId = getParams()
+
+			if(isNaN(testId)){
+				window.location.href = "https://nnakleskin.github.io/go-code-hack/quiz.html?vid=1"
+			}
+
+
+			let questions = 
+				[
+					new Question("Сколько веток в Московском метро?", 
+					[
+						new Answer("10", 0),
+						new Answer("19", 0),
+						new Answer("14", 1),
+						new Answer("25", 0)
+					]),
+
+					new Question("Какое кольцо имеет больший диаметр: «Коричневая кольцевая ветка» или «МЦК»?", 
+					[
+						new Answer("Они одинаковой длины", 0),
+						new Answer("Коричневая кольцевая ветка", 0),
+						new Answer("МЦК", 1),
+						new Answer("МЦК не является линией московского метро", 0)
+					]),
+
+					new Question("Насколько увеличилось количество станций метро в 2022 году по сравнению с 2010?", 
+					[
+						new Answer("18", 0),
+						new Answer("75", 1),
+						new Answer("50", 0),
+						new Answer("112", 0)
+					]),
+
+					new Question("В каком году все московские такси стали желтого цвета?", 
+					[
+						new Answer("2018", 1),
+						new Answer("2010", 0),
+						new Answer("2022", 0),
+						new Answer("2012", 0)
+					]),
+
+					new Question("Что было добавлено в метро в 2014 году?", 
+					[
+						new Answer("USB-разъемы для зарядки", 0),
+						new Answer("Wi-Fi", 1),
+						new Answer("Электронные табло для просмотра новостей", 0),
+						new Answer("Озвучка следующей станции", 0)
+					]),
+
+					new Question("Какие выставки можно наблюдать в московском метро?", 
+					[
+						new Answer("Детские работы", 0),
+						new Answer("Гончарные изделия", 0),
+						new Answer("Картинная галерея", 1),
+						new Answer("Произведения литературы", 0)
+					])
+				];
+			
+
+			if (parseInt(testId) === 1){
+				//Массив с вопросами
+				questions = 
+				[
+					new Question("Сколько веток в Московском метро?", 
+					[
+						new Answer("10", 0),
+						new Answer("19", 0),
+						new Answer("14", 1),
+						new Answer("25", 0)
+					]),
+
+					new Question("Какое кольцо имеет больший диаметр: «Коричневая кольцевая ветка» или «МЦК»?", 
+					[
+						new Answer("Они одинаковой длины", 0),
+						new Answer("Коричневая кольцевая ветка", 0),
+						new Answer("МЦК", 1),
+						new Answer("МЦК не является линией московского метро", 0)
+					]),
+
+					new Question("Насколько увеличилось количество станций метро в 2022 году по сравнению с 2010?", 
+					[
+						new Answer("18", 0),
+						new Answer("75", 1),
+						new Answer("50", 0),
+						new Answer("112", 0)
+					]),
+
+					new Question("В каком году все московские такси стали желтого цвета?", 
+					[
+						new Answer("2018", 1),
+						new Answer("2010", 0),
+						new Answer("2022", 0),
+						new Answer("2012", 0)
+					]),
+
+					new Question("Что было добавлено в метро в 2014 году?", 
+					[
+						new Answer("USB-разъемы для зарядки", 0),
+						new Answer("Wi-Fi", 1),
+						new Answer("Электронные табло для просмотра новостей", 0),
+						new Answer("Озвучка следующей станции", 0)
+					]),
+
+					new Question("Какие выставки можно наблюдать в московском метро?", 
+					[
+						new Answer("Детские работы", 0),
+						new Answer("Гончарные изделия", 0),
+						new Answer("Картинная галерея", 1),
+						new Answer("Произведения литературы", 0)
+					])
+				];
+			}
+
+			if (parseInt(testId) === 2){
+				//Массив с вопросами
+				questions = 
+				[
+					new Question("Что произошло в Москве благодаря платным парковкам и электробусам? ", 
+					[
+						new Answer("Количество человек, передвигающихся на своем собственном автомобиле, увеличилось", 0),
+						new Answer("Количество человек, передвигающихся на своем общественном транспорте, уменьшилось", 0),
+						new Answer("Воздух стал чище на 20%", 1),
+						new Answer("Меньше людей стали посещать центр Москвы", 0)
+					]),
+
+					new Question("Какие птицы в 2019 году стали гнездиться и петь в московских парках, из-за того, что они стали зеленее?", 
+					[
+						new Answer("Ласточки", 0),
+						new Answer("Стрижи", 0),
+						new Answer("Соловьи", 1),
+						new Answer("Синицы", 0)
+					]),
+
+					new Question("Какая маршрутная сеть была запущена в 2016 году и заметно улучшила ситуацию с наземным транспортом в Москве? ", 
+					[
+						new Answer("«Ваша маршрутка»", 0),
+						new Answer("«Магистраль»", 1),
+						new Answer("«Транспорт столицы»", 0),
+						new Answer("«Ваш маршрут»", 0)
+					]),
+
+					new Question("В Москве […Ваш ответ…] новых табло, которые показывают точное время прибытия транспорта.", 
+					[
+						new Answer("1170", 1),
+						new Answer("450", 0),
+						new Answer("2000", 0),
+						new Answer("780", 0)
+					]),
+
+					new Question("Сколько поездок на такси в день совершалось раньше (10 лет назад)?", 
+					[
+						new Answer("22 500", 0),
+						new Answer("45 000", 1),
+						new Answer("31 000", 0),
+						new Answer("60 000", 0)
+					]),
+
+					new Question("Сколько поездок на такси в день совершается в настоящее время?", 
+					[
+						new Answer("1 000 000", 0),
+						new Answer("800 000", 0),
+						new Answer("975 000", 1),
+						new Answer("70 000", 0)
+					])
+				];
+			}
+
+			if (parseInt(testId) === 3){
+				//Массив с вопросами
+				questions = 
+				[
+					new Question("Сколько преступлений было раскрыто благодаря камерам видеонаблюдения в 2021 году?", 
+					[
+						new Answer("Ни одного", 0),
+						new Answer("1 000", 0),
+						new Answer("7 000", 1),
+						new Answer("10 000", 0)
+					]),
+
+					new Question("Сколько всего камер видеонаблюдения установлено в Москве?", 
+					[
+						new Answer("213 000", 1),
+						new Answer("115 000", 0),
+						new Answer("397 000", 0),
+						new Answer("90 000", 0)
+					]),
+
+					new Question("С помощью чего можно оплатить проезд в общественном транспорте? A. Карта «Тройка» B. Социальная карта C. Банковская карта D. FacePay", 
+					[
+						new Answer("A, B, С", 0),
+						new Answer("Все 4 варианта правильные", 1),
+						new Answer("A, B, D", 0),
+						new Answer("Ни одним из перечисленных способов", 0)
+					]),
+
+					new Question(" Что, помимо проезда, можно оплатить картой Тройка?", 
+					[
+						new Answer("Поход в музей, зоопрак, городской прокат «Велобайк»", 1),
+						new Answer("Поход в театр, поход на концерт", 0),
+						new Answer("Покупку в магазине", 0),
+						new Answer("Поход в кино", 0)
+					]),
+
+					new Question("Сколько автомобилей каршеринга есть в Москве на данный момент? ", 
+					[
+						new Answer("5 000", 0),
+						new Answer("30 000", 1),
+						new Answer("10 000", 0),
+						new Answer("15 000", 0)
+					]),
+
+					new Question("Сколько в Москве на данный момент активных пользователей электросамокатов?", 
+					[
+						new Answer("1 000 000", 0),
+						new Answer("500 000", 0),
+						new Answer("1 500 000", 1),
+						new Answer("2 000 000", 0)
+					])
+				];
+			}
+
+			if (parseInt(testId) === 4){
+				//Массив с вопросами
+				questions = 
+				[
+					new Question("Сколько километров дорог было проложено за последние 12 лет?", 
+					[
+						new Answer("300", 0),
+						new Answer("700", 0),
+						new Answer("1 100", 1),
+						new Answer("2 300", 0)
+					]),
+
+					new Question("Что поспособствовало разгрузке дорог и снижению шума в Москве?", 
+					[
+						new Answer("Введение платных парковок", 1),
+						new Answer("Уменьшение людей, имеющих водительские права", 0),
+						new Answer("Построение многоэтажных парковок", 0),
+						new Answer("Увеличение стоимости частных автомобилей", 0)
+					]),
+
+					new Question("Благодаря какому приложению можно легко получить информацию обо всем общественном транспорте Москвы?", 
+					[
+						new Answer("Метро", 0),
+						new Answer("Московский транспорт", 1),
+						new Answer("Гугл карты", 0),
+						new Answer("Такого приложения пока не существует", 0)
+					]),
+
+					new Question("Какой цвет преобладает в интерфейсе транспортных приложений Москвы?", 
+					[
+						new Answer("Красный", 1),
+						new Answer("Зеленый", 0),
+						new Answer("Синий", 0),
+						new Answer("Черный", 0)
+					]),
+
+					new Question("Сколько автомобилей каршеринга есть в Москве на данный момент? ", 
+					[
+						new Answer("5 000", 0),
+						new Answer("30 000", 1),
+						new Answer("10 000", 0),
+						new Answer("15 000", 0)
+					]),
+
+					new Question("Сколько в Москве на данный момент активных пользователей электросамокатов?", 
+					[
+						new Answer("1 000 000", 0),
+						new Answer("500 000", 0),
+						new Answer("1 500 000", 1),
+						new Answer("2 000 000", 0)
+					])
+				];
+			}
+
+
+			
+
+
+			//Сам тест
+			const quiz = new Quiz(1, questions, results);
+
+			Update();
+
+			//Обновление теста
+			function Update()
+			{
+				//Проверяем, есть ли ещё вопросы
+				if(quiz.current < quiz.questions.length) 
+				{
+					//Если есть, меняем вопрос в заголовке
+					headElem.innerHTML = quiz.questions[quiz.current].text;
+
+					//Удаляем старые варианты ответов
+					buttonsElem.innerHTML = "";
+
+					//Создаём кнопки для новых вариантов ответов
+					for(let i = 0; i < quiz.questions[quiz.current].answers.length; i++)
+					{
+						let btn = document.createElement("button");
+						btn.className = "button";
+
+						btn.innerHTML = quiz.questions[quiz.current].answers[i].text;
+
+						btn.setAttribute("index", i);
+
+						buttonsElem.appendChild(btn);
+					}
+					
+					//Выводим номер текущего вопроса
+					pagesElem.innerHTML = (quiz.current + 1) + " / " + quiz.questions.length;
+
+					//Вызываем функцию, которая прикрепит события к новым кнопкам
+					Init();
+				}
+				else
+				{
+					//Если это конец, то выводим результат
+					buttonsElem.innerHTML = "";
+					headElem.innerHTML = quiz.results[quiz.result].text;
+					pagesElem.innerHTML = "Очки: " + quiz.score;
+					modal.classList.remove("d-none");
+					modalQuizScore.innerHTML = `Ваш результат: ${quiz.score}`;
+					modalQuizResult.innerHTML = quiz.results[quiz.result].text;
+					if (quiz.score >= questions.length / 2){
+						setProgressStorage(testId)
+					}
+				}
+			}
+
+			function Init()
+			{
+				//Находим все кнопки
+				let btns = document.getElementsByClassName("button");
+
+				for(let i = 0; i < btns.length; i++)
+				{
+					//Прикрепляем событие для каждой отдельной кнопки
+					//При нажатии на кнопку будет вызываться функция Click()
+					btns[i].addEventListener("click", function (e) { Click(e.target.getAttribute("index")); });
+				}
+			}
+
+			function Click(index) 
+			{
+				//Получаем номер правильного ответа
+				let correct = quiz.Click(index);
+
+				//Находим все кнопки
+				let btns = document.getElementsByClassName("button");
+
+				//Делаем кнопки серыми
+				for(let i = 0; i < btns.length; i++)
+				{
+					btns[i].className = "button button_passive";
+				}
+
+				//Если это тест с правильными ответами, то мы подсвечиваем правильный ответ зелёным, а неправильный - красным
+				if(quiz.type == 1)
+				{
+					if(correct >= 0)
+					{
+						btns[correct].className = "button button_correct";
+					}
+
+					if(index != correct) 
+					{
+						btns[index].className = "button button_wrong";
+					} 
+				}
+				else
+				{
+					//Иначе просто подсвечиваем зелёным ответ пользователя
+					btns[index].className = "button button_correct";
+				}
+
+				//Ждём секунду и обновляем тест
+				setTimeout(Update, 1000);
+			}
+		</script>
+	</body>
+</html>

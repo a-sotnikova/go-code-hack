@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Пазлы</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+	<div class="container-fluid">
+
+		<div class="container text-center">
+			<div class="progress-bar"></div>
+			<p class="progress-points">0 / 12</p>
+			<div class="puzl-holder text-center mt-3">
+				<img id="img-holder" src="" width="400" height="600" border="0" alt="img-holder" />
+				<p class="timer-holder text-center m-2"><span class="timer-minute">00</span>:<span class="timer-second">00</span>:<span class="timer-ms">00</span></p>
+			</div>
+			<div class="row">
+				<div class="col-12 mt-2 mb-2">
+					<button id="start-game" class="mm-btn w-100">Начать игру</button>
+				</div>
+				<div class="col-md-6 col-sm-12 mt-2 mb-2">
+					<button type="button" id="shuffle-pazl" class="mm-btn-second w-100">Перемешать</button>
+				</div>
+				<div class="col-md-6 col-sm-12 mt-2 mb-2">
+					<button type="button" id="finish-pazl" class="mm-btn-second w-100">Сложить пазл</button><br>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<div class="modal-overlay d-none">
+	<div class="modal-window">
+		<div class="modal-head">
+			<span id="close-modal">&times;</span>
+		</div>
+		<div class="modal-body">
+			<h6 class="modal-title">
+				Поздравляем! Вы справились с заданием!
+			</h6>
+			<p class="modal-desc"></p>
+			<button class="mm-btn w-100" id="close-game">Закрыть игру</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="assets/js/main.js"></script>
+<script type="text/javascript" src="assets/js/snapfit.js"></script>
+<script>
+	const startBtn = document.querySelector("#start-game")
+	const shuffleBtn = document.querySelector("#shuffle-pazl")
+	const finishBtn = document.querySelector("#finish-pazl")
+	const modal = document.querySelector(".modal-overlay")
+	const closeModal = document.querySelector("#close-modal")
+	const closeGame = document.querySelector("#close-game")
+	const modalDesc = document.querySelector(".modal-desc")
+	let imgHolder = document.querySelector("#img-holder")
+
+	closeModal.addEventListener("click", function(){
+		modal.classList.add("d-none")
+	})
+
+	closeGame.addEventListener("click", function(){
+		window.location.href = "https://mtmuseum.com/vdnh"
+	})
+
+	let timer = 0
+	let timerInterval
+	let ms = document.querySelector('.timer-ms')
+	let second = document.querySelector('.timer-second')
+	let minute = document.querySelector('.timer-minute')
+
+	let testId = getParams()
+
+	if(isNaN(testId)){
+		window.location.href = "https://nnakleskin.github.io/go-code-hack/pazl.html?vid=6"
+	}
+
+
+	if (testId === 6){
+		imgHolder.setAttribute("src", "assets/img/pazzels/6.jpg")
+		imgHolder.setAttribute("width", "500")
+		imgHolder.setAttribute("height", "600")
+		modalDesc.innerHTML = `Работа Александра Повзнера <br><br>
+								Здесь и сейчас <br><br>
+								Интуитивно уловимые образы, понятные посылы и по-настоящему демократичные мотивы в скульптурах Александра Повзнера напоминают нам о ценности межчеловеческого общения и взаимодействия, что создает основу для гуманности в социальном пространстве, в том числе и в транспортной системе.`
+	}
+
+	else if (testId === 7){
+		imgHolder.setAttribute("src", "assets/img/pazzels/7.png")
+		imgHolder.setAttribute("width", "500")
+		imgHolder.setAttribute("height", "450")
+		modalDesc.innerHTML = `Работа Аристарха Чернышёва <br><br>
+							Loading, 2008 <br><br>
+							Инфоскульптура за авторством пионера медиа-арта в России Аристарха Чернышева показывает развитие транспортных интерфейсов в современности: сейчас не нужно пльзоваться десятками различных источников информации, чтобы узнать, что требуется — все находится в вашем телефоне, что и изменяет практики повседневности.`
+	}
+
+	else if (testId === 8){
+		imgHolder.setAttribute("src", "assets/img/pazzels/8.png")
+		imgHolder.setAttribute("width", "500")
+		imgHolder.setAttribute("height", "600")
+		modalDesc.innerHTML = `Работа Александра Шишкина-Хокусая <br><br>
+								Щепки <br><br>
+								Арт-объекты Шишкина-Хокусая напоминают нам о былых социальных практиках, которые ныне отмирают или перестают быть распространенными в современном обществе. На контрасте с ними мы можем оценить, как сильно изменились социальные нормы и материальные условия, в рамках которых данные нормы развивались: теперь, с внедрением бесплитоных автомобилей «голосование» на дорогах уходит в прошлое, но все еще остается считываемой социальной практикой в современности, что и обыгрывается в его работе.`
+	}
+
+	else if (testId === 9){
+		imgHolder.setAttribute("src", "assets/img/pazzels/9.png")
+		imgHolder.setAttribute("width", "500")
+		imgHolder.setAttribute("height", "600")
+		modalDesc.innerHTML = `Работа Ильи Кабакова <br><br>
+								Свободный автобус, 2012 <br><br>
+								В своей работе Илья Кабаков, один из основателей московского концептуализма, показывает зрителю развитие наземного транспорта в советском прошлом. В современной транспортной системе наземный общественный транспорт начинает играть все более и более значимую роль, в особенности по сравнению с его ролью в прошлом, представляя экологичную, удобную и быструю замену не только личным автомобилям, но и метро, что подчеркивает особую значимость развития наземной транспортной системы.`
+	}
+
+	else if (testId === 10){
+		imgHolder.setAttribute("src", "assets/img/pazzels/10.png")
+		imgHolder.setAttribute("width", "470")
+		imgHolder.setAttribute("height", "620")
+		modalDesc.innerHTML = `Работа Алексея Морозова <br><br>
+								CIRRUS 2, 2012 <br><br>
+								Данная скульптура за авторством известного скульптора Морозова, директора Московского академического художественного училища и члена-корреспондента Российской Академии Художеств, демонстрирует развитие шеринговой культуры — культуры делиться. Именно тренд на разделение услуг между многим количеством людей обеспечивает экологичное развитие городской среды в целом и транспортной системы в частности.`
+	}
+
+
+
+	function startTimer() {
+	  stopTimer();
+	  timerInterval = setInterval(function() {
+	  timer += 1/60;
+	  msVal = Math.floor((timer - Math.floor(timer))*100);
+	  secondVal = Math.floor(timer) - Math.floor(timer/60) * 60;
+	  minuteVal = Math.floor(timer/60);
+	  ms.innerHTML = msVal < 10 ? "0" + msVal.toString() : msVal;
+	  second.innerHTML = secondVal < 10 ? "0" + secondVal.toString() : secondVal;
+	  minute.innerHTML = minuteVal < 10 ? "0" + minuteVal.toString() : minuteVal;
+	  }, 1000/60);
+	}
+
+	function stopTimer() {
+	  clearInterval(timerInterval);
+	}
+
+    function successFinish(){
+    	stopTimer()
+    	setProgressStorage(testId)
+    	modal.classList.remove("d-none")
+    }
+
+    shuffleBtn.addEventListener("click", function(){
+    	snapfit.admix(document.querySelector("#img-holder"))
+    })
+
+    finishBtn.addEventListener("click", function(){
+    	snapfit.solve(document.querySelector("#img-holder"))
+    })
+
+    startBtn.addEventListener("click", function(){
+    	let data = {
+    		callback: successFinish, 
+    		aborder:true, 
+    		aimage:true, 
+    		polygon:true, 
+    		space:20, 
+    		mixed: true, 
+    		level: 1,
+    		forcetui: true,
+    		simple: true
+    	}
+    	snapfit.add(imgHolder, data)
+    	startTimer()
+    })
+
+</script>
+</body>
+</html>
